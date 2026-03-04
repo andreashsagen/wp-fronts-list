@@ -1,0 +1,88 @@
+/**
+ * Retrieves the translation of text.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
+ * Those files can contain any CSS code that gets applied to the editor.
+ *
+ * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
+ */
+import './editor.scss';
+
+import {
+	CheckboxControl,
+	RadioControl,
+	TextControl,
+	ToggleControl,
+	SelectControl,
+	PanelBody,
+	ColorPalette,
+} from '@wordpress/components';
+
+import {
+	RichText,
+	InspectorControls,
+	useBlockProps,
+	InnerBlocks,
+} from '@wordpress/block-editor';
+
+import apiFetch from '@wordpress/api-fetch';
+import React, { useState, useEffect } from 'react';
+
+
+/**
+ * The edit function describes the structure of your block in the context of the
+ * editor. This represents what the editor will render when the block is used.
+ *
+ * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
+ *
+ * @return {Element} Element to render.
+ */
+export default function Edit( props ) {
+	const {
+		textField,
+		listItems,
+		cats,
+	} = props.attributes;
+
+	function onChangeTextField(value) {}
+	function say(value) {
+		console.log(value);
+	}
+
+	useState(() => {
+		apiFetch({ path: '/wp/v2/categories' }).then((categories) => {
+			const listItems = categories.map( ( category ) => (
+				<li data-category={ category.id } onClick={ say }>
+					{ category.name }
+				</li>
+			));
+			props.setAttributes({ cats: listItems });
+		});
+	});
+
+	return (
+		<>
+			<InspectorControls>
+				<PanelBody title={ __( 'Content' ) }>
+					<TextControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+						label="Search"
+						value={ textField }
+						help="Min. 3 chars"
+						onChange={ onChangeTextField }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			<div { ...useBlockProps() }>
+				<ul>{ cats }</ul>
+			</div>
+		</>
+	);
+}
