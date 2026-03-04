@@ -1,1 +1,1 @@
-# wp-fronts
+# wp-fronts-list
