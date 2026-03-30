@@ -1,6 +1,7 @@
 services:
   wordpress:
     image: wordpress:latest
+    hostname: localhost
     ports:
       - "8888:80"
     environment:
